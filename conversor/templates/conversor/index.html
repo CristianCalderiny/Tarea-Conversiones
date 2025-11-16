@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor Binario - Grupo 1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        /* Efecto de fondo animado */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(0, 255, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            z-index: 0;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+        
+        /* Grid animado de fondo */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+        
+        .container {
+            background: rgba(15, 20, 45, 0.95);
+            padding: 30px;
+            border-radius: 30px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 
+                0 0 80px rgba(0, 255, 255, 0.3),
+                0 0 40px rgba(255, 0, 128, 0.2),
+                inset 0 0 60px rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            animation: containerGlow 3s ease-in-out infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes containerGlow {
+            0%, 100% { box-shadow: 0 0 80px rgba(0, 255, 255, 0.3), 0 0 40px rgba(255, 0, 128, 0.2), inset 0 0 60px rgba(0, 255, 255, 0.05); }
+            50% { box-shadow: 0 0 100px rgba(0, 255, 255, 0.5), 0 0 60px rgba(255, 0, 128, 0.4), inset 0 0 80px rgba(0, 255, 255, 0.1); }
+        }
+        
+        /* Esquinas decorativas */
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #00ffff;
+        }
+        
+        .corner.top-left { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .corner.top-right { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+        .corner.bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+        .corner.bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: clamp(1.8em, 5vw, 3em);
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s linear infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            word-break: break-word;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: clamp(0.9em, 2.5vw, 1.2em);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            opacity: 0.8;
+        }
+        
+        .level-indicator {
+            text-align: center;
+            color: #ff00ff;
+            font-size: clamp(0.9em, 2vw, 1.1em);
+            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: #00ffff;
+            font-weight: 700;
+            font-size: clamp(1em, 2.5vw, 1.3em);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            font-size: clamp(1em, 3vw, 1.5em);
+            color: #00ffff;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 255, 0.1),
+                0 0 20px rgba(0, 255, 255, 0.2);
+            letter-spacing: 2px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 
+                inset 0 0 30px rgba(255, 0, 255, 0.2),
+                0 0 30px rgba(255, 0, 255, 0.5);
+            transform: scale(1.02);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(0, 255, 255, 0.3);
+            font-size: 0.85em;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            color: #0a0e27;
+            border: none;
+            border-radius: 15px;
+            font-size: clamp(1em, 3vw, 1.5em);
+            font-weight: 900;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.5),
+                0 0 15px rgba(255, 0, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.8),
+                0 0 25px rgba(255, 0, 255, 0.8);
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: clamp(0.9em, 2vw, 1.1em);
+            animation: alertPulse 2s ease-in-out infinite;
+            border: 2px solid;
+            word-break: break-word;
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .alert-error {
+            background: rgba(255, 0, 100, 0.2);
+            color: #ff0064;
+            border-color: #ff0064;
+            box-shadow: 0 0 20px rgba(255, 0, 100, 0.3);
+        }
+        
+        .resultado {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            border: 2px solid #00ffff;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+            animation: resultadoAppear 0.6s ease;
+        }
+        
+        @keyframes resultadoAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .resultado h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: clamp(1.3em, 4vw, 2em);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+        
+        .conversion-item {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .conversion-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .conversion-item:hover {
+            transform: translateX(5px) scale(1.02);
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+        }
+        
+        .conversion-item:hover::before {
+            left: 100%;
+        }
+        
+        .conversion-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .conversion-label {
+            font-weight: 700;
+            color: #00ffff;
+            font-size: clamp(0.9em, 2.5vw, 1.3em);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+            flex-shrink: 0;
+        }
+        
+        .conversion-value {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.2em, 3vw, 1.8em);
+            color: #ff00ff;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+            letter-spacing: 1px;
+            word-break: break-all;
+            text-align: right;
+        }
+        
+        .errorlist {
+            list-style: none;
+            color: #ff0064;
+            margin-top: 8px;
+            font-size: clamp(0.85em, 2vw, 1em);
+            font-weight: 700;
+        }
+        
+        .help-text {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 4px solid #00ffff;
+            border-radius: 10px;
+            font-size: clamp(0.85em, 2vw, 1em);
+            color: #00ffff;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            line-height: 1.6;
+        }
+        
+        .help-text strong {
+            color: #ff00ff;
+            font-weight: 900;
+        }
+        
+        .example {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: #ff00ff;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+            white-space: nowrap;
+        }
+        
+        /* Partículas flotantes */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 0 10px #00ffff;
+            z-index: 0;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-40px) translateX(-10px); }
+            75% { transform: translateY(-20px) translateX(5px); }
+        }
+        
+        .particle:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { top: 80%; left: 30%; animation-delay: 1s; }
+        .particle:nth-child(4) { top: 40%; left: 70%; animation-delay: 1.5s; }
+        
+        /* Efecto de escaneo */
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+        }
+        
+        /* Media Queries para móviles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            
+            .container {
+                padding: 20px;
+                border-radius: 20px;
+                margin: 10px auto;
+            }
+            
+            .corner {
+                width: 20px;
+                height: 20px;
+                border-width: 2px;
+            }
+            
+            h1 {
+                letter-spacing: 1px;
+                margin-bottom: 8px;
+            }
+            
+            .subtitle {
+                margin-bottom: 15px;
+                letter-spacing: 0.5px;
+            }
+            
+            .level-indicator {
+                margin-bottom: 20px;
+            }
+            
+            .form-control {
+                padding: 12px;
+                letter-spacing: 1px;
+            }
+            
+            .btn {
+                padding: 15px;
+                letter-spacing: 1px;
+            }
+            
+            .conversion-item {
+                padding: 12px 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .conversion-value {
+                text-align: left;
+                width: 100%;
+            }
+            
+            .help-text {
+                padding: 12px;
+                line-height: 1.5;
+            }
+            
+            .resultado {
+                padding: 20px;
+            }
+            
+            .particle {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .corner {
+                display: none;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .resultado {
+                margin-top: 25px;
+                padding: 15px;
+            }
+            
+            .conversion-item {
+                padding: 10px 12px;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    
+    <div class="container">
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+        <div class="scan-line"></div>
+        
+        <h1>⚡ BINARIO ⚡</h1>
+        <p class="subtitle">⚔️ CONVERTIDOR BINARIO ⚔️</p>
+        <p class="level-indicator">🎮 GRUPO #1 🎮</p>
+        
+        {% if error %}
+        <div class="alert alert-error">
+            ⚠️ ERROR: {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.numero_binario.label_tag }}
+                <div class="input-wrapper">
+                    {{ form.numero_binario }}
+                </div>
+                {% if form.numero_binario.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.numero_binario.errors %}
+                            <li>⚠️ {{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn">
+                <span>🚀 INICIAR CONVERSIÓN 🚀</span>
+            </button>
+            
+            <div class="help-text">
+                💾 <strong>INSTRUCCIONES:</strong> Ingresa código binario puro (0 y 1 solamente).
+                <br>
+                📊 <strong>EJEMPLOS:</strong> 
+                <span class="example">1010</span>, 
+                <span class="example">11111111</span>, 
+                <span class="example">10101010</span>
+            </div>
+        </form>
+        
+        {% if resultado %}
+        <div class="resultado">
+            <h2>⭐ CONVERSIÓN EXITOSA ⭐</h2>
+            
+            <div class="conversion-item">
+                <span class="conversion-label">🟦 BINARIO</span>
+                <span class="conversion-value">{{ resultado.binario }}</span>
+            </div>
+            
+            <div class="conversion-item">
+                <span class="conversion-label">🔟 DECIMAL</span>
+                <span class="conversion-value">{{ resultado.decimal }}</span>
+            </div>
+            
+            <div class="conversion-item">
+                <span class="conversion-label">8️⃣ OCTAL</span>
+                <span class="conversion-value">{{ resultado.octal }}</span>
+            </div>
+            
+            <div class="conversion-item">
+                <span class="conversion-label">🔠 HEX</span>
+                <span class="conversion-value">{{ resultado.hexadecimal }}</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
